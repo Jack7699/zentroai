@@ -532,6 +532,7 @@ async function sendMessage(text) {
   saveChats();
   render();
   input.focus();
+    generateTitle(chat);
 }
 
 // ==========================================
@@ -569,6 +570,7 @@ document.getElementById("clearChat").addEventListener("click", () => {
   if (!chat || !chat.messages.length) return;
 
   if (confirm("Clear this conversation?")) {
+        chat.titleGenerated = false;
     chat.messages = [];
     chat.title = "New conversation";
     saveChats();
