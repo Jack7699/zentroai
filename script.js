@@ -86,10 +86,13 @@ authForm.addEventListener("submit", async event => {
 
   try {
     if (isSignUp) {
-      const { data, error } = await supabaseClient.auth.signUp({
-        email,
-        password
-      });
+const { data, error } = await supabaseClient.auth.signUp({
+  email,
+  password,
+  options: {
+    emailRedirectTo: "https://jack7699.github.io/zentroai/"
+  }
+});
 
       if (error) throw error;
 
@@ -184,6 +187,7 @@ logoutButton.addEventListener("click", async () => {
 supabaseClient.auth.onAuthStateChange((_event, session) => {
   updateAuthUI(session);
 });
+
 
 // CHECK EXISTING SESSION
 async function initializeAuth() {
