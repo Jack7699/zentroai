@@ -1,5 +1,5 @@
 // ZENTROAI CONFIGURATION
-const API_URL = "YOUR_CLOUDFLARE_WORKER_URL";
+const API_URL = "https://zentro.hvth53873.workers.dev/L";
 
 // DOM ELEMENTS
 const form = document.getElementById("chatForm");
