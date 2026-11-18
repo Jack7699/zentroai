@@ -2,6 +2,7 @@
    ZENTROAI — PREMIUM AURORA DESIGN
    Compatible with existing index.html
    ========================================== */
+[hidden] { display: none !important; }
 
 :root {
   --bg: #090711;
