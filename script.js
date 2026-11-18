@@ -1,4 +1,3 @@
-
 // ==========================================
 // ZENTROAI — AUTHENTICATION + AI SYSTEM
 // ==========================================
@@ -73,6 +72,18 @@ authToggle.addEventListener("click", () => {
   authError.textContent = "";
 });
 
+// Switch the form back to sign-in mode
+function switchToSignIn(message = "") {
+  isSignUp = false;
+  authTitle.textContent = "Welcome to ZentroAI";
+  authSubtitle.textContent = "Sign in to continue";
+  authSubmit.textContent = "Sign in";
+  authToggle.textContent = "Don't have an account? Sign up";
+  authPassword.value = "";
+  authError.style.color = "#70e2b5";
+  authError.textContent = message;
+}
+
 // UPDATE AUTH UI
 function updateAuthUI(session) {
   currentSession = session;
@@ -96,67 +107,57 @@ authForm.addEventListener("submit", async event => {
 
   authSubmit.disabled = true;
   authSubmit.textContent = "Please wait...";
-  authError.textContent = "";
   authError.style.color = "#ff7181";
+  authError.textContent = "";
 
   try {
     if (isSignUp) {
-      const { data, error } = await supabaseClient.auth.signUp({
-        email,
-        password
-      });
+      const { data, error } = await supabaseClient.auth.signUp({ email, password });
+
+      // Account already exists: sign in with these details and go to the homepage
+      const alreadyExists =
+        (error && /already/i.test(error.message)) ||
+        (data?.user && Array.isArray(data.user.identities) && data.user.identities.length === 0);
+
+      if (alreadyExists) {
+        const signIn = await supabaseClient.auth.signInWithPassword({ email, password });
+
+        if (signIn.error || !signIn.data.session) {
+          throw new Error("This email already has an account. Check your password and try again.");
+        }
+
+        updateAuthUI(signIn.data.session);
+        return;
+      }
 
       if (error) throw error;
 
       if (data.session) {
-        authError.style.color = "#70e2b5";
-        authError.textContent = "Account created successfully!";
+        // New account with no email confirmation: go straight in
         updateAuthUI(data.session);
       } else {
-        authError.style.color = "#70e2b5";
-        authError.textContent =
-          "Account created! You can now sign in.";
-
-        isSignUp = false;
-        authTitle.textContent = "Welcome to ZentroAI";
-        authSubtitle.textContent = "Sign in to continue";
-        authSubmit.textContent = "Sign in";
-        authToggle.textContent =
-          "Don't have an account? Sign up";
-
-        authPassword.value = "";
+        // Email confirmation is on: user must confirm before signing in
+        switchToSignIn("Account created! Check your email to confirm, then sign in.");
       }
 
     } else {
-      const { data, error } =
-        await supabaseClient.auth.signInWithPassword({
-          email,
-          password
-        });
+      const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
 
-      if (error) {
-        throw new Error("Login failed: " + error.message);
-      }
-
-      if (!data.session) {
-        throw new Error("Login failed: No session received.");
-      }
+      if (error) throw new Error("Login failed: " + error.message);
+      if (!data.session) throw new Error("Login failed: No session received.");
 
       updateAuthUI(data.session);
     }
 
   } catch (error) {
     authError.style.color = "#ff7181";
-    authError.textContent = isSignUp
-      ? "Account creation failed: " + error.message
-      : error.message;
+    authError.textContent = error.message;
   } finally {
     authSubmit.disabled = false;
-    authSubmit.textContent = isSignUp
-      ? "Create account"
-      : "Sign in";
+    authSubmit.textContent = isSignUp ? "Create account" : "Sign in";
   }
 });
+
 // LOGOUT BUTTON
 const profile = document.querySelector(".profile");
 
@@ -190,7 +191,6 @@ logoutButton.addEventListener("click", async () => {
 supabaseClient.auth.onAuthStateChange((_event, session) => {
   updateAuthUI(session);
 });
-
 
 // CHECK EXISTING SESSION
 async function initializeAuth() {
@@ -371,8 +371,7 @@ function addMessage(message) {
       image.style.height = "auto";
       image.style.marginTop = "12px";
       image.style.borderRadius = "15px";
-      image.style.border =
-        "1px solid rgba(177,133,255,.2)";
+      image.style.border = "1px solid rgba(177,133,255,.2)";
 
       const download = document.createElement("a");
 
