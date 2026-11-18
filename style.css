@@ -594,3 +594,352 @@ button {
     background: #0009;
   }
 }
+
+
+/* =================================
+   ZENTROAI — PREMIUM REDESIGN
+================================= */
+
+:root {
+  --purple: #9b70ff;
+  --purple-light: #c4aaff;
+}
+
+/* Smoother interface */
+
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+button {
+  transition: all .2s ease;
+}
+
+body {
+  background:
+    radial-gradient(ellipse at 65% 15%, #43247718, transparent 42%),
+    #09090f;
+}
+
+/* Brand */
+
+.brand-icon,
+.welcome-logo,
+.message-icon {
+  background: linear-gradient(135deg, #b18aff, #7040df);
+  box-shadow: 0 5px 30px #9565ff30;
+}
+
+.brand {
+  letter-spacing: -.7px;
+}
+
+/* Sidebar */
+
+.sidebar {
+  background: rgba(14, 14, 23, .97);
+}
+
+.new-chat {
+  box-shadow: 0 5px 20px #8250e830;
+}
+
+.history-item {
+  transition: .2s;
+}
+
+.profile {
+  padding: 5px;
+}
+
+/* Header */
+
+.topbar {
+  background: #09090fbb;
+  backdrop-filter: blur(15px);
+}
+
+.model-label {
+  background: #171521;
+  border: 1px solid var(--border);
+  border-radius: 30px;
+  padding: 9px 14px;
+}
+
+.clear-button {
+  transition: .2s;
+}
+
+.clear-button:hover {
+  border-color: var(--purple);
+  color: var(--purple-light);
+}
+
+/* Welcome section */
+
+.welcome {
+  max-width: 680px;
+  margin-top: 55px;
+}
+
+.welcome-logo {
+  position: relative;
+  border: 1px solid #ffffff25;
+  border-radius: 23px;
+  animation: floatLogo 4s ease-in-out infinite;
+}
+
+.logo-glow {
+  position: absolute;
+  inset: -15px;
+  border-radius: 30px;
+  background: #9565ff20;
+  filter: blur(25px);
+  z-index: -1;
+}
+
+@keyframes floatLogo {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+
+.welcome-badge {
+  background: #9565ff13;
+  border-color: #9565ff45;
+}
+
+.welcome h1 {
+  font-size: clamp(38px, 6vw, 58px);
+  letter-spacing: -3px;
+  line-height: 1.12;
+  margin: 25px 0 17px;
+}
+
+.welcome h1 span {
+  background: linear-gradient(100deg, #d1baff, #9565ff, #7443d5);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.welcome-description {
+  max-width: 470px;
+  margin: auto;
+  font-size: 14px !important;
+}
+
+.suggestion-heading {
+  color: #858398;
+  font-size: 9px;
+  letter-spacing: 1.5px;
+  font-weight: 700;
+  margin-top: 42px;
+  text-align: left;
+}
+
+.suggestions {
+  margin-top: 14px;
+  gap: 13px;
+}
+
+.suggestion {
+  min-height: 83px;
+  border-radius: 16px;
+  background: linear-gradient(145deg, #191824, #11111a);
+  border-color: #ffffff0c;
+  position: relative;
+}
+
+.suggestion:hover {
+  transform: translateY(-4px);
+  background: #1c1929;
+  box-shadow: 0 10px 30px #0004;
+}
+
+.suggestion-icon {
+  width: 39px;
+  height: 39px;
+  display: grid;
+  place-items: center;
+  border-radius: 12px;
+  font-size: 19px;
+  flex-shrink: 0;
+}
+
+.suggestion-icon.purple {
+  color: #c4aaff;
+  background: #9565ff20;
+}
+
+.suggestion-icon.blue {
+  color: #80baff;
+  background: #399aff20;
+}
+
+.suggestion-icon.green {
+  color: #74e4b1;
+  background: #36c88a20;
+}
+
+.suggestion-icon.orange {
+  color: #ffbd79;
+  background: #ff9c3920;
+}
+
+.suggestion-arrow {
+  margin-left: auto;
+  color: #777389;
+  font-size: 15px;
+}
+
+/* Composer */
+
+.composer-area {
+  max-width: 850px;
+}
+
+.composer {
+  border-radius: 19px;
+  background: #171622;
+  border-color: #373247;
+  padding: 14px 15px;
+  box-shadow: 0 12px 40px #0003;
+}
+
+.composer:focus-within {
+  border-color: #9565ff;
+  box-shadow: 0 0 0 3px #9565ff19;
+}
+
+.composer button {
+  width: 39px;
+  height: 39px;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px #9565ff40;
+}
+
+.disclaimer {
+  margin-top: 13px;
+}
+
+/* Chat messages */
+
+.message {
+  font-size: 14px;
+  line-height: 1.85;
+}
+
+.message.user .message-content {
+  background: linear-gradient(135deg, #34254f, #251b38);
+  border-color: #9565ff35;
+  border-radius: 17px 17px 4px 17px;
+  padding: 14px 18px;
+}
+
+.message.assistant .message-content {
+  padding-top: 3px;
+}
+
+.message-content pre {
+  border-radius: 13px;
+  border-color: #383448;
+}
+
+.copy-button {
+  cursor: pointer;
+  transition: .2s;
+}
+
+.copy-button:hover {
+  background: #201b2e;
+  border-color: var(--purple);
+}
+
+/* Mobile improvements */
+
+.mobile-brand {
+  display: none;
+  font-weight: 800;
+  font-size: 17px;
+}
+
+.mobile-brand span {
+  color: var(--purple-light);
+}
+
+@media (max-width: 700px) {
+  .topbar {
+    height: 58px;
+    min-height: 58px;
+  }
+
+  .topbar-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .mobile-brand {
+    display: block;
+  }
+
+  .model-label {
+    font-size: 10px;
+    padding: 7px 10px;
+  }
+
+  .clear-button {
+    padding: 7px 9px;
+    font-size: 10px;
+  }
+
+  .welcome {
+    margin-top: 25px;
+  }
+
+  .welcome-logo {
+    width: 59px;
+    height: 59px;
+  }
+
+  .welcome h1 {
+    font-size: 39px;
+    letter-spacing: -2px;
+  }
+
+  .welcome-description {
+    font-size: 12px !important;
+    padding: 0 10px;
+  }
+
+  .suggestion-heading {
+    margin-top: 32px;
+  }
+
+  .suggestion {
+    min-height: 72px;
+    padding: 13px;
+  }
+
+  .composer-area {
+    padding-bottom: max(14px, env(safe-area-inset-bottom));
+  }
+
+  .disclaimer {
+    font-size: 8px;
+  }
+
+  .message {
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 380px) {
+  .model-label {
+    display: none;
+  }
+
+  .welcome h1 {
+    font-size: 34px;
+  }
+}
