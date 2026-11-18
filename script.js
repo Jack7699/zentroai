@@ -84,6 +84,11 @@ function switchToSignIn(message = "") {
   authError.textContent = message;
 }
 
+// Go to the homepage after a successful sign-in
+function goToHomepage() {
+  window.location.href = "index.html";
+}
+
 // UPDATE AUTH UI
 function updateAuthUI(session) {
   currentSession = session;
@@ -126,15 +131,15 @@ authForm.addEventListener("submit", async event => {
           throw new Error("This email already has an account. Check your password and try again.");
         }
 
-        updateAuthUI(signIn.data.session);
+        goToHomepage();
         return;
       }
 
       if (error) throw error;
 
       if (data.session) {
-        // New account with no email confirmation: go straight in
-        updateAuthUI(data.session);
+        // New account with no email confirmation: go straight to the homepage
+        goToHomepage();
       } else {
         // Email confirmation is on: user must confirm before signing in
         switchToSignIn("Account created! Check your email to confirm, then sign in.");
@@ -146,7 +151,8 @@ authForm.addEventListener("submit", async event => {
       if (error) throw new Error("Login failed: " + error.message);
       if (!data.session) throw new Error("Login failed: No session received.");
 
-      updateAuthUI(data.session);
+      // Successful sign-in: go to the homepage
+      goToHomepage();
     }
 
   } catch (error) {
