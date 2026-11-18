@@ -210,7 +210,13 @@ function render() {
 
 function scrollToBottom() {
   const area = document.getElementById("chatArea");
-  area.scrollTop = area.scrollHeight;
+
+  requestAnimationFrame(() => {
+    area.scrollTo({
+      top: area.scrollHeight,
+      behavior: "smooth"
+    });
+  });
 }
 
 // TYPING INDICATOR
