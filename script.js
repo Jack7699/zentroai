@@ -146,7 +146,7 @@ async function verifyEmailOtp() {
   const token = document.getElementById("otpInput").value.trim();
   const verifyButton = document.getElementById("verifyOtpButton");
 
-  if (!/^\d{6}$/.test(token)) {
+  if (!/^\d{8}$/.test(token)) {
     authError.textContent = "Enter a valid 6-digit code.";
     return;
   }
