@@ -1064,3 +1064,182 @@ button {
 .sidebar-bottom {
   border-top: 1px solid rgba(255,255,255,0.07);
 }
+
+
+/* =========================================
+   ZENTROAI — FUTURISTIC MAIN PAGE
+========================================= */
+
+/* Ambient background */
+.main {
+  background:
+    radial-gradient(ellipse at 50% 35%, rgba(105, 62, 210, 0.13), transparent 55%),
+    radial-gradient(ellipse at 85% 80%, rgba(25, 105, 220, 0.08), transparent 45%),
+    #09090f;
+}
+
+/* Animated ambient glow */
+.main::before,
+.main::after {
+  content: "";
+  position: absolute;
+  width: 380px;
+  height: 380px;
+  border-radius: 50%;
+  filter: blur(110px);
+  opacity: 0.16;
+  pointer-events: none;
+  z-index: 0;
+  animation: ambientFloat 12s ease-in-out infinite alternate;
+}
+
+.main::before {
+  top: 10%;
+  left: 15%;
+  background: #874dff;
+}
+
+.main::after {
+  right: 5%;
+  bottom: 5%;
+  background: #2869ff;
+  animation-delay: -6s;
+}
+
+@keyframes ambientFloat {
+  from {
+    transform: translate(0, 0) scale(0.9);
+  }
+  to {
+    transform: translate(55px, -35px) scale(1.2);
+  }
+}
+
+/* Keep content above ambient effects */
+.topbar,
+.chat-area,
+.composer-area {
+  position: relative;
+  z-index: 1;
+}
+
+/* Futuristic welcome logo */
+.welcome-logo {
+  border: 1px solid rgba(255,255,255,0.25);
+  box-shadow:
+    0 0 25px rgba(149,101,255,0.5),
+    0 0 75px rgba(100,70,255,0.2),
+    inset 0 0 20px rgba(255,255,255,0.12);
+  animation: logoFloat 5s ease-in-out infinite;
+}
+
+@keyframes logoFloat {
+  0%, 100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-8px) rotate(3deg);
+  }
+}
+
+/* Futuristic welcome heading */
+.welcome h1 {
+  background: linear-gradient(
+    100deg,
+    #ffffff 5%,
+    #c5aaff 40%,
+    #8e8aff 70%,
+    #72caff 100%
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  filter: drop-shadow(0 0 20px rgba(149,101,255,0.15));
+}
+
+/* Glowing badge */
+.welcome-badge {
+  border-color: rgba(149,101,255,0.4);
+  background: rgba(149,101,255,0.10);
+  box-shadow: 0 0 20px rgba(149,101,255,0.08);
+}
+
+/* Futuristic suggestion panels */
+.suggestion {
+  background: linear-gradient(
+    145deg,
+    rgba(28,25,45,0.82),
+    rgba(14,15,28,0.85)
+  );
+  border: 1px solid rgba(149,101,255,0.16);
+  backdrop-filter: blur(15px);
+  box-shadow: inset 0 1px rgba(255,255,255,0.035);
+}
+
+.suggestion:hover {
+  border-color: rgba(149,101,255,0.65);
+  background: linear-gradient(
+    145deg,
+    rgba(44,34,70,0.9),
+    rgba(18,20,38,0.95)
+  );
+  box-shadow:
+    0 0 25px rgba(149,101,255,0.12),
+    inset 0 0 20px rgba(149,101,255,0.04);
+}
+
+/* Glowing suggestion icons */
+.suggestion-icon {
+  border: 1px solid rgba(149,101,255,0.2);
+  box-shadow: 0 0 15px rgba(149,101,255,0.1);
+}
+
+/* Futuristic composer */
+.composer {
+  background: rgba(19,18,32,0.88);
+  border: 1px solid rgba(149,101,255,0.35);
+  backdrop-filter: blur(25px);
+  box-shadow:
+    0 0 30px rgba(100,70,255,0.08),
+    0 15px 45px rgba(0,0,0,0.25);
+}
+
+.composer:focus-within {
+  border-color: #a984ff;
+  box-shadow:
+    0 0 0 3px rgba(149,101,255,0.08),
+    0 0 30px rgba(149,101,255,0.18);
+}
+
+/* Glowing send button */
+.composer button {
+  background: linear-gradient(135deg, #a77aff, #6550ed);
+  box-shadow: 0 0 18px rgba(149,101,255,0.25);
+}
+
+.composer button:hover {
+  box-shadow: 0 0 28px rgba(149,101,255,0.55);
+}
+
+/* Subtle grid */
+.chat-area::before {
+  background-size: 55px 55px;
+  background-image:
+    linear-gradient(rgba(149,101,255,0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(149,101,255,0.035) 1px, transparent 1px);
+  mask-image: radial-gradient(ellipse at center, black, transparent 85%);
+}
+
+/* AI response icon */
+.message.assistant .message-icon {
+  box-shadow: 0 0 18px rgba(149,101,255,0.3);
+}
+
+/* Smooth interactions */
+.suggestion,
+.composer,
+.composer button,
+.welcome-logo {
+  transition: all 0.3s ease;
+}
+
