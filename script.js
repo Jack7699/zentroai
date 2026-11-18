@@ -623,3 +623,37 @@ document.addEventListener("keydown", (event) => {
 if (chats.length > 0) {
   activeChatId = chats[0].id;
 }
+
+// ==========================================
+// PREMIUM PAGE
+// ==========================================
+
+const chatArea = document.getElementById("chatArea");
+const composerArea = document.getElementById("composerArea");
+const premiumView = document.getElementById("premiumView");
+const premiumNotice = document.getElementById("premiumNotice");
+
+// Show the Premium page or go back to the chat
+function showPremium(show) {
+  premiumView.hidden = !show;
+  chatArea.hidden = show;
+  composerArea.hidden = show;
+  closeSidebar();
+}
+
+document.getElementById("premiumButton").addEventListener("click", () => {
+  showPremium(true);
+});
+
+document.getElementById("backToChat").addEventListener("click", () => {
+  showPremium(false);
+});
+
+// No payment yet: be clear that nothing changed
+document.getElementById("upgradeButton").addEventListener("click", () => {
+  premiumNotice.textContent = "Premium checkout isn't available yet. Your plan has not changed.";
+});
+
+// Starting or opening a chat returns to the chat view
+document.getElementById("newChat").addEventListener("click", () => showPremium(false));
+chatHistory.addEventListener("click", () => showPremium(false));
