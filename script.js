@@ -73,6 +73,19 @@ authToggle.addEventListener("click", () => {
   authError.textContent = "";
 });
 
+// UPDATE AUTH UI
+function updateAuthUI(session) {
+  currentSession = session;
+
+  if (session) {
+    authScreen.hidden = true;
+    app.hidden = false;
+    render();
+  } else {
+    authScreen.hidden = false;
+    app.hidden = true;
+  }
+}
 
 // AUTH FORM
 authForm.addEventListener("submit", async event => {
