@@ -654,6 +654,59 @@ document.getElementById("upgradeButton").addEventListener("click", () => {
   premiumNotice.textContent = "Premium checkout isn't available yet. Your plan has not changed.";
 });
 
+// ==========================================
+// AUTO CHAT TITLES
+// ==========================================
+
+async function generateTitle(chat) {
+  if (!chat || chat.titleGenerated || chat.messages.length < 2) return;
+
+  chat.titleGenerated = true;
+
+  const userText = chat.messages.find(m => m.role === "user")?.text || "";
+  const replyText =
+    chat.messages.find(m => m.role === "assistant" && m.text && !m.image)?.text || "";
+
+  const prompt =
+    "Write a short title of 3 to 6 words for this conversation. " +
+    "Reply with only the title. No quotes, no emojis, no full stop.\n\n" +
+    "User: " + userText.slice(0, 500) + "\n\n" +
+    "Assistant: " + replyText.slice(0, 500);
+
+  try {
+    const response = await fetch(API_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ messages: [{ role: "user", text: prompt }] })
+    });
+
+    const data = await response.json();
+
+    if (response.ok && data.reply) {
+      const title = data.reply
+        .replace(/["'`*#]/g, "")
+        .replace(/\s+/g, " ")
+        .trim()
+        .slice(0, 40);
+
+      if (title) chat.title = title;
+    }
+  } catch (error) {
+    console.warn("Could not generate title:", error);
+  }
+
+  saveChats();
+  renderHistory();
+}
+
+// Give older chats an AI title too, one request at a time
+async function generateMissingTitles() {
+  for (const chat of chats) {
+    await generateTitle(chat);
+  }
+}
+
+generateMissingTitles();
 // Starting or opening a chat returns to the chat view
 document.getElementById("newChat").addEventListener("click", () => showPremium(false));
 chatHistory.addEventListener("click", () => showPremium(false));
