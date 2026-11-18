@@ -10,10 +10,7 @@ const SUPABASE_KEY = "sb_publishable_QBxQx0QIJPnr23GRNv1uYA_3QvKFUxL";
 const API_URL = "https://zentro.hvth53873.workers.dev";
 
 // SUPABASE CLIENT
-const supabaseClient = window.supabase.createClient(
-  SUPABASE_URL,
-  SUPABASE_KEY
-);
+const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 // AUTH ELEMENTS
 const authScreen = document.getElementById("authScreen");
@@ -49,22 +46,13 @@ let isLoading = false;
 // AUTHENTICATION
 // ==========================================
 
-// SIGN IN / SIGN UP SWITCH
+// Switch between sign in and sign up
 authToggle.addEventListener("click", () => {
   isSignUp = !isSignUp;
 
-  authTitle.textContent = isSignUp
-    ? "Create your account"
-    : "Welcome to ZentroAI";
-
-  authSubtitle.textContent = isSignUp
-    ? "Join ZentroAI and explore beyond"
-    : "Sign in to continue";
-
-  authSubmit.textContent = isSignUp
-    ? "Create account"
-    : "Sign in";
-
+  authTitle.textContent = isSignUp ? "Create your account" : "Welcome to ZentroAI";
+  authSubtitle.textContent = isSignUp ? "Join ZentroAI and explore beyond" : "Sign in to continue";
+  authSubmit.textContent = isSignUp ? "Create account" : "Sign in";
   authToggle.textContent = isSignUp
     ? "Already have an account? Sign in"
     : "Don't have an account? Sign up";
@@ -84,12 +72,12 @@ function switchToSignIn(message = "") {
   authError.textContent = message;
 }
 
-// Go to the homepage after a successful sign-in
-function goToHomepage() {
-  window.location.href = "index.html";
+// Show the chat screen (no page reload)
+function goToHomepage(session) {
+  updateAuthUI(session);
 }
 
-// UPDATE AUTH UI
+// Show the login screen or the chat screen
 function updateAuthUI(session) {
   currentSession = session;
 
@@ -104,7 +92,7 @@ function updateAuthUI(session) {
 }
 
 // AUTH FORM
-authForm.addEventListener("submit", async event => {
+authForm.addEventListener("submit", async (event) => {
   event.preventDefault();
 
   const email = authEmail.value.trim();
@@ -119,7 +107,7 @@ authForm.addEventListener("submit", async event => {
     if (isSignUp) {
       const { data, error } = await supabaseClient.auth.signUp({ email, password });
 
-      // Account already exists: sign in with these details and go to the homepage
+      // Account already exists: sign in with these details instead
       const alreadyExists =
         (error && /already/i.test(error.message)) ||
         (data?.user && Array.isArray(data.user.identities) && data.user.identities.length === 0);
@@ -131,15 +119,15 @@ authForm.addEventListener("submit", async event => {
           throw new Error("This email already has an account. Check your password and try again.");
         }
 
-        goToHomepage();
+        goToHomepage(signIn.data.session);
         return;
       }
 
       if (error) throw error;
 
       if (data.session) {
-        // New account with no email confirmation: go straight to the homepage
-        goToHomepage();
+        // New account, no email confirmation: go straight to the chat
+        goToHomepage(data.session);
       } else {
         // Email confirmation is on: user must confirm before signing in
         switchToSignIn("Account created! Check your email to confirm, then sign in.");
@@ -151,8 +139,8 @@ authForm.addEventListener("submit", async event => {
       if (error) throw new Error("Login failed: " + error.message);
       if (!data.session) throw new Error("Login failed: No session received.");
 
-      // Successful sign-in: go to the homepage
-      goToHomepage();
+      // Successful sign-in: show the chat
+      goToHomepage(data.session);
     }
 
   } catch (error) {
@@ -170,7 +158,6 @@ const profile = document.querySelector(".profile");
 const logoutButton = document.createElement("button");
 logoutButton.textContent = "↪";
 logoutButton.title = "Sign out";
-
 logoutButton.style.marginLeft = "auto";
 logoutButton.style.background = "transparent";
 logoutButton.style.border = "1px solid #ffffff20";
@@ -182,23 +169,19 @@ logoutButton.style.cursor = "pointer";
 profile.appendChild(logoutButton);
 
 logoutButton.addEventListener("click", async () => {
-  const confirmed = confirm("Are you sure you want to sign out?");
-
-  if (!confirmed) return;
+  if (!confirm("Are you sure you want to sign out?")) return;
 
   const { error } = await supabaseClient.auth.signOut();
 
-  if (error) {
-    alert(error.message);
-  }
+  if (error) alert(error.message);
 });
 
-// SESSION LISTENER
+// SESSION LISTENER: shows the chat whenever a session starts or ends
 supabaseClient.auth.onAuthStateChange((_event, session) => {
   updateAuthUI(session);
 });
 
-// CHECK EXISTING SESSION
+// CHECK EXISTING SESSION ON PAGE LOAD
 async function initializeAuth() {
   const { data, error } = await supabaseClient.auth.getSession();
 
@@ -233,7 +216,7 @@ function saveChats() {
 }
 
 function getActiveChat() {
-  return chats.find(chat => chat.id === activeChatId);
+  return chats.find((chat) => chat.id === activeChatId);
 }
 
 // ==========================================
@@ -263,12 +246,9 @@ function createChat() {
 function renderHistory() {
   chatHistory.innerHTML = "";
 
-  chats.forEach(chat => {
+  chats.forEach((chat) => {
     const item = document.createElement("div");
-
-    item.className =
-      "history-item" +
-      (chat.id === activeChatId ? " active" : "");
+    item.className = "history-item" + (chat.id === activeChatId ? " active" : "");
 
     const title = document.createElement("span");
     title.className = "history-title";
@@ -279,10 +259,10 @@ function renderHistory() {
     deleteButton.textContent = "×";
     deleteButton.title = "Delete conversation";
 
-    deleteButton.addEventListener("click", event => {
+    deleteButton.addEventListener("click", (event) => {
       event.stopPropagation();
 
-      chats = chats.filter(c => c.id !== chat.id);
+      chats = chats.filter((c) => c.id !== chat.id);
 
       if (activeChatId === chat.id) {
         activeChatId = chats[0]?.id || null;
@@ -309,7 +289,7 @@ function renderHistory() {
 // ==========================================
 
 function escapeHTML(text) {
-  return text.replace(/[&<>"']/g, char => ({
+  return text.replace(/[&<>"']/g, (char) => ({
     "&": "&amp;",
     "<": "&lt;",
     ">": "&gt;",
@@ -320,16 +300,13 @@ function escapeHTML(text) {
 
 function formatMessage(text) {
   let safe = escapeHTML(text);
-
   const blocks = [];
 
-  safe = safe.replace(/```(\w*)\n?([\s\S]*?)```/g,
-    (_, language, code) => {
-      const id = blocks.length;
-      blocks.push(`<pre><code>${code.trim()}</code></pre>`);
-      return `%%CODE${id}%%`;
-    }
-  );
+  safe = safe.replace(/```(\w*)\n?([\s\S]*?)```/g, (_, language, code) => {
+    const id = blocks.length;
+    blocks.push(`<pre><code>${code.trim()}</code></pre>`);
+    return `%%CODE${id}%%`;
+  });
 
   safe = safe.replace(/`([^`]+)`/g, "<code>$1</code>");
   safe = safe.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
@@ -337,9 +314,7 @@ function formatMessage(text) {
   safe = safe.replace(/^[-*] (.+)$/gm, "<li>$1</li>");
   safe = safe.replace(/\n/g, "<br>");
 
-  safe = safe.replace(/%%CODE(\d+)%%/g,
-    (_, id) => blocks[Number(id)]
-  );
+  safe = safe.replace(/%%CODE(\d+)%%/g, (_, id) => blocks[Number(id)]);
 
   return safe;
 }
@@ -366,11 +341,9 @@ function addMessage(message) {
 
     if (message.image) {
       const image = document.createElement("img");
-
       image.src = message.image;
       image.alt = "Image generated by ZentroAI";
       image.className = "generated-image";
-
       image.style.display = "block";
       image.style.width = "100%";
       image.style.maxWidth = "520px";
@@ -380,11 +353,9 @@ function addMessage(message) {
       image.style.border = "1px solid rgba(177,133,255,.2)";
 
       const download = document.createElement("a");
-
       download.href = message.image;
       download.download = "zentro-generated-image.png";
       download.textContent = "↓ Download image";
-
       download.style.display = "inline-block";
       download.style.marginTop = "12px";
       download.style.padding = "9px 14px";
@@ -398,12 +369,10 @@ function addMessage(message) {
     }
 
     row.append(icon, content);
-
   } else {
     const content = document.createElement("div");
     content.className = "message-content";
     content.textContent = message.text;
-
     row.appendChild(content);
   }
 
@@ -437,10 +406,7 @@ function scrollToBottom() {
   const area = document.getElementById("chatArea");
 
   requestAnimationFrame(() => {
-    area.scrollTo({
-      top: area.scrollHeight,
-      behavior: "smooth"
-    });
+    area.scrollTo({ top: area.scrollHeight, behavior: "smooth" });
   });
 }
 
@@ -450,7 +416,6 @@ function scrollToBottom() {
 
 function showTyping() {
   const row = document.createElement("div");
-
   row.className = "message assistant";
   row.id = "typingIndicator";
 
@@ -483,12 +448,7 @@ async function sendMessage(text) {
   const chat = getActiveChat();
   const trimmedText = text.trim();
 
-  const userMessage = {
-    role: "user",
-    text: trimmedText
-  };
-
-  chat.messages.push(userMessage);
+  chat.messages.push({ role: "user", text: trimmedText });
 
   if (chat.messages.length === 1) {
     chat.title = trimmedText.slice(0, 35);
@@ -514,17 +474,11 @@ async function sendMessage(text) {
 
     let requestBody;
 
-    // IMAGE GENERATION
     if (isImageRequest(trimmedText)) {
-      requestBody = {
-        mode: "image",
-        prompt: trimmedText
-      };
-
+      requestBody = { mode: "image", prompt: trimmedText };
     } else {
-      // NORMAL CHAT
       requestBody = {
-        messages: chat.messages.map(message => ({
+        messages: chat.messages.map((message) => ({
           role: message.role,
           text: message.text
         }))
@@ -533,18 +487,14 @@ async function sendMessage(text) {
 
     const response = await fetch(API_URL, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify(requestBody)
     });
 
     const data = await response.json();
 
     if (!response.ok) {
-      throw new Error(
-        data.error || "The AI service returned an error."
-      );
+      throw new Error(data.error || "The AI service returned an error.");
     }
 
     if (requestBody.mode === "image") {
@@ -557,16 +507,12 @@ async function sendMessage(text) {
         text: "Here's your generated image!",
         image: data.image
       });
-
     } else {
       if (!data.reply) {
         throw new Error("Zentro received an empty response.");
       }
 
-      chat.messages.push({
-        role: "assistant",
-        text: data.reply
-      });
+      chat.messages.push({ role: "assistant", text: data.reply });
     }
 
     chat.updated = Date.now();
@@ -592,18 +538,17 @@ async function sendMessage(text) {
 // CHAT FORM
 // ==========================================
 
-form.addEventListener("submit", event => {
+form.addEventListener("submit", (event) => {
   event.preventDefault();
   sendMessage(input.value);
 });
 
 input.addEventListener("input", () => {
   input.style.height = "auto";
-  input.style.height =
-    Math.min(input.scrollHeight, 160) + "px";
+  input.style.height = Math.min(input.scrollHeight, 160) + "px";
 });
 
-input.addEventListener("keydown", event => {
+input.addEventListener("keydown", (event) => {
   if (event.key === "Enter" && !event.shiftKey) {
     event.preventDefault();
     form.requestSubmit();
@@ -626,7 +571,6 @@ document.getElementById("clearChat").addEventListener("click", () => {
   if (confirm("Clear this conversation?")) {
     chat.messages = [];
     chat.title = "New conversation";
-
     saveChats();
     render();
   }
@@ -636,7 +580,7 @@ document.getElementById("clearChat").addEventListener("click", () => {
 // SUGGESTIONS
 // ==========================================
 
-document.querySelectorAll(".suggestion").forEach(button => {
+document.querySelectorAll(".suggestion").forEach((button) => {
   button.addEventListener("click", () => {
     sendMessage(button.dataset.prompt);
   });
@@ -657,18 +601,14 @@ document.getElementById("menuButton").addEventListener("click", () => {
 });
 
 document.getElementById("closeSidebar").addEventListener("click", closeSidebar);
-
 overlay.addEventListener("click", closeSidebar);
 
 // ==========================================
 // KEYBOARD SHORTCUT
 // ==========================================
 
-document.addEventListener("keydown", event => {
-  if (
-    (event.ctrlKey || event.metaKey) &&
-    event.key.toLowerCase() === "k"
-  ) {
+document.addEventListener("keydown", (event) => {
+  if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "k") {
     if (!currentSession) return;
 
     event.preventDefault();
