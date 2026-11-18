@@ -97,7 +97,7 @@ function showOtpScreen() {
         id="otpInput"
         type="text"
         inputmode="numeric"
-        maxlength="6"
+        maxlength="8"
         placeholder="000000"
         style="width:100%;padding:15px;margin-bottom:15px;
         border-radius:10px;border:1px solid #554477;
