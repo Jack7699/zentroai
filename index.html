@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -15,174 +14,211 @@
 <body>
 
   <div class="auth-screen" id="authScreen">
-  <div class="auth-card">
-    <div class="brand-icon">Z</div>
-    <h1 id="authTitle">Welcome to ZentroAI</h1>
-    <p id="authSubtitle">Sign in to continue</p>
-
-    <form id="authForm">
-      <input
-        type="email"
-        id="authEmail"
-        placeholder="Email address"
-        required
-      >
-
-      <input
-        type="password"
-        id="authPassword"
-        placeholder="Password"
-        minlength="6"
-        required
-      >
-
-      <button type="submit" id="authSubmit">Sign in</button>
-    </form>
-
-    <p id="authError"></p>
-
-    <button id="authToggle" type="button">
-      Don't have an account? Sign up
-    </button>
-  </div>
-</div>
-
-<div class="app" id="app" hidden>
-  
-  <aside class="sidebar" id="sidebar">
-    <div class="brand">
+    <div class="auth-card">
       <div class="brand-icon">Z</div>
-      <span>Zentro<span class="brand-ai">AI</span></span>
-      <button class="close-sidebar" id="closeSidebar">×</button>
-    </div>
+      <h1 id="authTitle">Welcome to ZentroAI</h1>
+      <p id="authSubtitle">Sign in to continue</p>
 
-    <button class="new-chat" id="newChat">
-      <span>＋</span> New chat
-      <span class="shortcut">⌘ K</span>
-    </button>
-
-    <div class="history-heading">RECENT CONVERSATIONS</div>
-    <div class="chat-history" id="chatHistory"></div>
-
-    <div class="sidebar-bottom">
-      <div class="profile">
-        <div class="avatar">Z</div>
-        <div class="profile-info">
-          <strong>ZentroAI</strong>
-          <span>Your AI assistant</span>
-        </div>
-        <span class="online-dot"></span>
-      </div>
-    </div>
-  </aside>
-
-  <main class="main">
-
-    <header class="topbar">
-      <div class="topbar-left">
-        <button class="menu-button" id="menuButton" aria-label="Open menu">☰</button>
-        <div class="mobile-brand">Zentro<span>AI</span></div>
-        <div class="model-label">
-          <span class="model-dot"></span>
-          Zentro Intelligence
-        </div>
-      </div>
-      <button class="clear-button" id="clearChat">Clear chat</button>
-    </header>
-
-    <section class="chat-area" id="chatArea">
-
-      <div class="welcome" id="welcome">
-
-        <div class="welcome-logo">
-          <span>Z</span>
-          <div class="logo-glow"></div>
-        </div>
-
-        <div class="welcome-badge">
-          <span>✦</span> YOUR AI, REIMAGINED
-        </div>
-
-        <h1>Think bigger.<br><span>Create beyond.</span></h1>
-
-        <p class="welcome-description">
-          Your ideas deserve more. Ask questions, explore possibilities
-          and bring your next big idea to life.
-        </p>
-
-        <div class="suggestion-heading">WHAT WOULD YOU LIKE TO DO?</div>
-
-        <div class="suggestions">
-
-          <button class="suggestion" data-prompt="Give me 5 creative project ideas.">
-            <span class="suggestion-icon purple">✦</span>
-            <div>
-              <strong>Creative ideas</strong>
-              <small>Discover something new</small>
-            </div>
-            <span class="suggestion-arrow">↗</span>
-          </button>
-
-          <button class="suggestion" data-prompt="Teach me something interesting about technology.">
-            <span class="suggestion-icon blue">⌘</span>
-            <div>
-              <strong>Learn something</strong>
-              <small>Explore new topics</small>
-            </div>
-            <span class="suggestion-arrow">↗</span>
-          </button>
-
-          <button class="suggestion" data-prompt="Help me write a JavaScript program.">
-            <span class="suggestion-icon green">⌨</span>
-            <div>
-              <strong>Write code</strong>
-              <small>Build something cool</small>
-            </div>
-            <span class="suggestion-arrow">↗</span>
-          </button>
-
-          <button class="suggestion" data-prompt="Help me plan a productive day.">
-            <span class="suggestion-icon orange">◷</span>
-            <div>
-              <strong>Make a plan</strong>
-              <small>Organize your ideas</small>
-            </div>
-            <span class="suggestion-arrow">↗</span>
-          </button>
-
-        </div>
-      </div>
-
-      <div class="messages" id="messages"></div>
-
-    </section>
-
-    <footer class="composer-area">
-      <form class="composer" id="chatForm">
-        <textarea
-          id="messageInput"
-          placeholder="Ask Zentro anything..."
-          rows="1"
-          maxlength="10000"
-          aria-label="Message ZentroAI"
-        ></textarea>
-
-        <button type="submit" id="sendButton" aria-label="Send message">
-          ↑
-        </button>
+      <form id="authForm">
+        <input type="email" id="authEmail" placeholder="Email address" required>
+        <input type="password" id="authPassword" placeholder="Password" minlength="6" required>
+        <button type="submit" id="authSubmit">Sign in</button>
       </form>
 
-      <p class="disclaimer">
-        <span>✦</span> ZentroAI can make mistakes. Check important information.
-      </p>
-    </footer>
+      <p id="authError"></p>
 
-  </main>
-</div>
+      <button id="authToggle" type="button">Don't have an account? Sign up</button>
+    </div>
+  </div>
 
-<div class="mobile-overlay" id="mobileOverlay"></div>
-  
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="script.js"></script>
+  <div class="app" id="app" hidden>
+
+    <aside class="sidebar" id="sidebar">
+      <div class="brand">
+        <div class="brand-icon">Z</div>
+        <span>Zentro<span class="brand-ai">AI</span></span>
+        <button class="close-sidebar" id="closeSidebar">×</button>
+      </div>
+
+      <button class="new-chat" id="newChat">
+        <span>＋</span> New chat
+        <span class="shortcut">⌘ K</span>
+      </button>
+
+      <div class="history-heading">RECENT CONVERSATIONS</div>
+      <div class="chat-history" id="chatHistory"></div>
+
+      <div class="sidebar-bottom">
+        <button class="premium-btn" id="premiumButton">👑 Premium</button>
+
+        <div class="profile">
+          <div class="avatar">Z</div>
+          <div class="profile-info">
+            <strong>ZentroAI</strong>
+            <span>Your AI assistant</span>
+          </div>
+          <span class="online-dot"></span>
+        </div>
+      </div>
+    </aside>
+
+    <main class="main">
+
+      <header class="topbar">
+        <div class="topbar-left">
+          <button class="menu-button" id="menuButton" aria-label="Open menu">☰</button>
+          <div class="mobile-brand">Zentro<span>AI</span></div>
+          <div class="model-label">
+            <span class="model-dot"></span>
+            Zentro Intelligence
+          </div>
+        </div>
+        <button class="clear-button" id="clearChat">Clear chat</button>
+      </header>
+
+      <section class="chat-area" id="chatArea">
+
+        <div class="welcome" id="welcome">
+
+          <div class="welcome-logo">
+            <span>Z</span>
+            <div class="logo-glow"></div>
+          </div>
+
+          <div class="welcome-badge">
+            <span>✦</span> YOUR AI, REIMAGINED
+          </div>
+
+          <h1>Think bigger.<br><span>Create beyond.</span></h1>
+
+          <p class="welcome-description">
+            Your ideas deserve more. Ask questions, explore possibilities
+            and bring your next big idea to life.
+          </p>
+
+          <div class="suggestion-heading">WHAT WOULD YOU LIKE TO DO?</div>
+
+          <div class="suggestions">
+
+            <button class="suggestion" data-prompt="Give me 5 creative project ideas.">
+              <span class="suggestion-icon purple">✦</span>
+              <div>
+                <strong>Creative ideas</strong>
+                <small>Discover something new</small>
+              </div>
+              <span class="suggestion-arrow">↗</span>
+            </button>
+
+            <button class="suggestion" data-prompt="Teach me something interesting about technology.">
+              <span class="suggestion-icon blue">⌘</span>
+              <div>
+                <strong>Learn something</strong>
+                <small>Explore new topics</small>
+              </div>
+              <span class="suggestion-arrow">↗</span>
+            </button>
+
+            <button class="suggestion" data-prompt="Help me write a JavaScript program.">
+              <span class="suggestion-icon green">⌨</span>
+              <div>
+                <strong>Write code</strong>
+                <small>Build something cool</small>
+              </div>
+              <span class="suggestion-arrow">↗</span>
+            </button>
+
+            <button class="suggestion" data-prompt="Help me plan a productive day.">
+              <span class="suggestion-icon orange">◷</span>
+              <div>
+                <strong>Make a plan</strong>
+                <small>Organize your ideas</small>
+              </div>
+              <span class="suggestion-arrow">↗</span>
+            </button>
+
+          </div>
+        </div>
+
+        <div class="messages" id="messages"></div>
+
+      </section>
+
+      <!-- PREMIUM PAGE -->
+      <section class="premium-view" id="premiumView" hidden>
+        <div class="premium-wrap">
+
+          <button class="back-btn" id="backToChat">← Back to Chat</button>
+
+          <div class="premium-badge">👑 ZENTROAI PREMIUM</div>
+
+          <h1>Think <span>Beyond</span> Limits</h1>
+
+          <p class="premium-sub">
+            Keep the conversation going. Premium removes the daily message limit so you can explore, create and build without stopping.
+          </p>
+
+          <div class="price">
+            <strong>$4.99</strong>
+            <span>/month</span>
+          </div>
+
+          <button class="upgrade-btn" id="upgradeButton">Upgrade to Premium</button>
+          <p class="upgrade-note" id="premiumNotice"></p>
+
+          <div class="compare">
+
+            <div class="plan">
+              <h3>Free</h3>
+              <p class="plan-price">$0 forever</p>
+              <div class="limit">500<small>messages per day</small></div>
+              <ul class="perks">
+                <li>Full access to ZentroAI chat</li>
+                <li>Resets every day</li>
+              </ul>
+            </div>
+
+            <div class="plan premium">
+              <h3>Premium</h3>
+              <p class="plan-price">$4.99 / month</p>
+              <div class="limit">∞<small>unlimited AI messages</small></div>
+              <ul class="perks">
+                <li>Unlimited AI messages</li>
+                <li>No daily limit</li>
+                <li>Everything in Free</li>
+              </ul>
+            </div>
+
+          </div>
+
+        </div>
+      </section>
+
+      <footer class="composer-area" id="composerArea">
+        <form class="composer" id="chatForm">
+          <textarea
+            id="messageInput"
+            placeholder="Ask Zentro anything..."
+            rows="1"
+            maxlength="10000"
+            aria-label="Message ZentroAI"
+          ></textarea>
+
+          <button type="submit" id="sendButton" aria-label="Send message">
+            ↑
+          </button>
+        </form>
+
+        <p class="disclaimer">
+          <span>✦</span> ZentroAI can make mistakes. Check important information.
+        </p>
+      </footer>
+
+    </main>
+  </div>
+
+  <div class="mobile-overlay" id="mobileOverlay"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="script.js"></script>
 </body>
 </html>
