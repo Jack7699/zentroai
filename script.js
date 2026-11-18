@@ -1,8 +1,37 @@
 
-// ZENTROAI CONFIGURATION
+// ==========================================
+// ZENTROAI — AUTHENTICATION + AI SYSTEM
+// ==========================================
+
+// SUPABASE CONFIGURATION
+const SUPABASE_URL = "https://puzgeihczwyaszdbirdj.supabase.co";
+const SUPABASE_KEY = "sb_publishable_QBxQx0QIJPnr23GRNv1uYA_3QvKFUxL";
+
+// AI CONFIGURATION
 const API_URL = "https://zentro.hvth53873.workers.dev";
 
-// DOM ELEMENTS
+// SUPABASE CLIENT
+const supabaseClient = window.supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_KEY
+);
+
+// AUTH ELEMENTS
+const authScreen = document.getElementById("authScreen");
+const app = document.getElementById("app");
+const authForm = document.getElementById("authForm");
+const authEmail = document.getElementById("authEmail");
+const authPassword = document.getElementById("authPassword");
+const authTitle = document.getElementById("authTitle");
+const authSubtitle = document.getElementById("authSubtitle");
+const authSubmit = document.getElementById("authSubmit");
+const authToggle = document.getElementById("authToggle");
+const authError = document.getElementById("authError");
+
+let isSignUp = false;
+let currentSession = null;
+
+// CHAT ELEMENTS
 const form = document.getElementById("chatForm");
 const input = document.getElementById("messageInput");
 const messagesBox = document.getElementById("messages");
@@ -12,21 +41,181 @@ const chatHistory = document.getElementById("chatHistory");
 const sidebar = document.getElementById("sidebar");
 const overlay = document.getElementById("mobileOverlay");
 
+// CHAT STORAGE
 let chats = JSON.parse(localStorage.getItem("zentro_chats") || "[]");
 let activeChatId = null;
 let isLoading = false;
 
+// ==========================================
+// AUTHENTICATION
+// ==========================================
+
+// SIGN IN / SIGN UP SWITCH
+authToggle.addEventListener("click", () => {
+  isSignUp = !isSignUp;
+
+  authTitle.textContent = isSignUp
+    ? "Create your account"
+    : "Welcome to ZentroAI";
+
+  authSubtitle.textContent = isSignUp
+    ? "Join ZentroAI and explore beyond"
+    : "Sign in to continue";
+
+  authSubmit.textContent = isSignUp
+    ? "Create account"
+    : "Sign in";
+
+  authToggle.textContent = isSignUp
+    ? "Already have an account? Sign in"
+    : "Don't have an account? Sign up";
+
+  authError.textContent = "";
+});
+
+// AUTH FORM
+authForm.addEventListener("submit", async event => {
+  event.preventDefault();
+
+  const email = authEmail.value.trim();
+  const password = authPassword.value;
+
+  authSubmit.disabled = true;
+  authSubmit.textContent = "Please wait...";
+  authError.textContent = "";
+
+  try {
+    if (isSignUp) {
+      const { data, error } = await supabaseClient.auth.signUp({
+        email,
+        password
+      });
+
+      if (error) throw error;
+
+      if (!data.session) {
+        authError.style.color = "#70e2b5";
+        authError.textContent =
+          "Account created! Check your email to confirm your account.";
+      } else {
+        authError.textContent = "";
+      }
+
+    } else {
+      const { error } =
+        await supabaseClient.auth.signInWithPassword({
+          email,
+          password
+        });
+
+      if (error) throw error;
+    }
+
+  } catch (error) {
+    authError.style.color = "#ff7181";
+    authError.textContent = error.message;
+  }
+
+  authSubmit.disabled = false;
+  authSubmit.textContent = isSignUp
+    ? "Create account"
+    : "Sign in";
+});
+
+// UPDATE AUTH SCREEN
+function updateAuthUI(session) {
+  currentSession = session;
+
+  if (session) {
+    authScreen.hidden = true;
+    app.hidden = false;
+
+    const profileName = document.querySelector(".profile-info strong");
+    const profileDescription =
+      document.querySelector(".profile-info span");
+
+    if (profileName) {
+      profileName.textContent =
+        session.user.email.split("@")[0];
+    }
+
+    if (profileDescription) {
+      profileDescription.textContent = session.user.email;
+    }
+
+    render();
+
+  } else {
+    app.hidden = true;
+    authScreen.hidden = false;
+  }
+}
+
+// LOGOUT BUTTON
+const profile = document.querySelector(".profile");
+
+const logoutButton = document.createElement("button");
+logoutButton.textContent = "↪";
+logoutButton.title = "Sign out";
+
+logoutButton.style.marginLeft = "auto";
+logoutButton.style.background = "transparent";
+logoutButton.style.border = "1px solid #ffffff20";
+logoutButton.style.borderRadius = "8px";
+logoutButton.style.color = "#c4a1ff";
+logoutButton.style.padding = "7px 10px";
+logoutButton.style.cursor = "pointer";
+
+profile.appendChild(logoutButton);
+
+logoutButton.addEventListener("click", async () => {
+  const confirmed = confirm("Are you sure you want to sign out?");
+
+  if (!confirmed) return;
+
+  const { error } = await supabaseClient.auth.signOut();
+
+  if (error) {
+    alert(error.message);
+  }
+});
+
+// SESSION LISTENER
+supabaseClient.auth.onAuthStateChange((_event, session) => {
+  updateAuthUI(session);
+});
+
+// CHECK EXISTING SESSION
+async function initializeAuth() {
+  const { data, error } = await supabaseClient.auth.getSession();
+
+  if (error) {
+    authError.textContent = error.message;
+    return;
+  }
+
+  updateAuthUI(data.session);
+}
+
+initializeAuth();
+
+// ==========================================
 // IMAGE REQUEST DETECTION
+// ==========================================
+
 function isImageRequest(text) {
   return /\b(?:create|generate|make|draw|design)\b[\s\S]{0,45}\b(?:image|picture|illustration|artwork|wallpaper|logo)\b|\b(?:image|picture)\s+of\b/i.test(text);
 }
 
+// ==========================================
 // STORAGE
+// ==========================================
+
 function saveChats() {
   try {
     localStorage.setItem("zentro_chats", JSON.stringify(chats));
   } catch (error) {
-    console.warn("Could not save chat. Browser storage may be full.", error);
+    console.warn("Could not save chats:", error);
   }
 }
 
@@ -34,7 +223,10 @@ function getActiveChat() {
   return chats.find(chat => chat.id === activeChatId);
 }
 
+// ==========================================
 // CREATE CHAT
+// ==========================================
+
 function createChat() {
   const chat = {
     id: crypto.randomUUID(),
@@ -51,14 +243,19 @@ function createChat() {
   closeSidebar();
 }
 
-// HISTORY
+// ==========================================
+// CHAT HISTORY
+// ==========================================
+
 function renderHistory() {
   chatHistory.innerHTML = "";
 
   chats.forEach(chat => {
     const item = document.createElement("div");
+
     item.className =
-      "history-item" + (chat.id === activeChatId ? " active" : "");
+      "history-item" +
+      (chat.id === activeChatId ? " active" : "");
 
     const title = document.createElement("span");
     title.className = "history-title";
@@ -94,7 +291,10 @@ function renderHistory() {
   });
 }
 
+// ==========================================
 // SAFE TEXT FORMATTING
+// ==========================================
+
 function escapeHTML(text) {
   return text.replace(/[&<>"']/g, char => ({
     "&": "&amp;",
@@ -131,7 +331,10 @@ function formatMessage(text) {
   return safe;
 }
 
+// ==========================================
 // DISPLAY MESSAGES
+// ==========================================
+
 function addMessage(message) {
   const row = document.createElement("div");
   row.className = `message ${message.role}`;
@@ -148,9 +351,9 @@ function addMessage(message) {
       content.innerHTML = formatMessage(message.text);
     }
 
-    // DISPLAY GENERATED IMAGE
     if (message.image) {
       const image = document.createElement("img");
+
       image.src = message.image;
       image.alt = "Image generated by ZentroAI";
       image.className = "generated-image";
@@ -161,9 +364,11 @@ function addMessage(message) {
       image.style.height = "auto";
       image.style.marginTop = "12px";
       image.style.borderRadius = "15px";
-      image.style.border = "1px solid rgba(177,133,255,.2)";
+      image.style.border =
+        "1px solid rgba(177,133,255,.2)";
 
       const download = document.createElement("a");
+
       download.href = message.image;
       download.download = "zentro-generated-image.png";
       download.textContent = "↓ Download image";
@@ -181,17 +386,25 @@ function addMessage(message) {
     }
 
     row.append(icon, content);
+
   } else {
     const content = document.createElement("div");
     content.className = "message-content";
     content.textContent = message.text;
+
     row.appendChild(content);
   }
 
   messagesBox.appendChild(row);
 }
 
+// ==========================================
+// RENDER
+// ==========================================
+
 function render() {
+  if (!currentSession) return;
+
   renderHistory();
 
   messagesBox.innerHTML = "";
@@ -219,9 +432,13 @@ function scrollToBottom() {
   });
 }
 
+// ==========================================
 // TYPING INDICATOR
+// ==========================================
+
 function showTyping() {
   const row = document.createElement("div");
+
   row.className = "message assistant";
   row.id = "typingIndicator";
 
@@ -240,9 +457,12 @@ function removeTyping() {
   document.getElementById("typingIndicator")?.remove();
 }
 
+// ==========================================
 // SEND MESSAGE
+// ==========================================
+
 async function sendMessage(text) {
-  if (!text.trim() || isLoading) return;
+  if (!currentSession || !text.trim() || isLoading) return;
 
   if (!activeChatId) {
     createChat();
@@ -288,6 +508,7 @@ async function sendMessage(text) {
         mode: "image",
         prompt: trimmedText
       };
+
     } else {
       // NORMAL CHAT
       requestBody = {
@@ -309,7 +530,9 @@ async function sendMessage(text) {
     const data = await response.json();
 
     if (!response.ok) {
-      throw new Error(data.error || "The AI service returned an error.");
+      throw new Error(
+        data.error || "The AI service returned an error."
+      );
     }
 
     if (requestBody.mode === "image") {
@@ -353,7 +576,10 @@ async function sendMessage(text) {
   input.focus();
 }
 
-// FORM
+// ==========================================
+// CHAT FORM
+// ==========================================
+
 form.addEventListener("submit", event => {
   event.preventDefault();
   sendMessage(input.value);
@@ -361,7 +587,8 @@ form.addEventListener("submit", event => {
 
 input.addEventListener("input", () => {
   input.style.height = "auto";
-  input.style.height = Math.min(input.scrollHeight, 160) + "px";
+  input.style.height =
+    Math.min(input.scrollHeight, 160) + "px";
 });
 
 input.addEventListener("keydown", event => {
@@ -371,31 +598,42 @@ input.addEventListener("keydown", event => {
   }
 });
 
-// NEW CHAT
+// ==========================================
+// NEW CHAT + CLEAR CHAT
+// ==========================================
+
 document.getElementById("newChat").addEventListener("click", () => {
   createChat();
 });
 
 document.getElementById("clearChat").addEventListener("click", () => {
   const chat = getActiveChat();
+
   if (!chat || !chat.messages.length) return;
 
   if (confirm("Clear this conversation?")) {
     chat.messages = [];
     chat.title = "New conversation";
+
     saveChats();
     render();
   }
 });
 
+// ==========================================
 // SUGGESTIONS
+// ==========================================
+
 document.querySelectorAll(".suggestion").forEach(button => {
   button.addEventListener("click", () => {
     sendMessage(button.dataset.prompt);
   });
 });
 
+// ==========================================
 // MOBILE SIDEBAR
+// ==========================================
+
 function closeSidebar() {
   sidebar.classList.remove("open");
   overlay.classList.remove("active");
@@ -407,19 +645,29 @@ document.getElementById("menuButton").addEventListener("click", () => {
 });
 
 document.getElementById("closeSidebar").addEventListener("click", closeSidebar);
+
 overlay.addEventListener("click", closeSidebar);
 
+// ==========================================
 // KEYBOARD SHORTCUT
+// ==========================================
+
 document.addEventListener("keydown", event => {
-  if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "k") {
+  if (
+    (event.ctrlKey || event.metaKey) &&
+    event.key.toLowerCase() === "k"
+  ) {
+    if (!currentSession) return;
+
     event.preventDefault();
     createChat();
   }
 });
 
-// INITIALIZE
+// ==========================================
+// INITIALIZE CHAT
+// ==========================================
+
 if (chats.length > 0) {
   activeChatId = chats[0].id;
 }
-
-render();
