@@ -145,18 +145,9 @@ function addMessage(message) {
     const content = document.createElement("div");
     content.className = "message-content";
     content.innerHTML = formatMessage(message.text);
-
-    const copy = document.createElement("button");
-    copy.className = "copy-button";
-    copy.textContent = "Copy response";
-
-    copy.addEventListener("click", async () => {
-      await navigator.clipboard.writeText(message.text);
-      copy.textContent = "Copied!";
-      setTimeout(() => copy.textContent = "Copy response", 1500);
-    });
-
-    content.appendChild(copy);
+    
+row.append(icon, content);
+    
     row.append(icon, content);
   } else {
     const content = document.createElement("div");
