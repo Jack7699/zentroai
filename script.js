@@ -1,5 +1,5 @@
 // ZENTROAI CONFIGURATION
-const API_URL = "https://zentro.hvth53873.workers.dev/L";
+const API_URL = "https://zentro.hvth53873.workers.dev";
 
 // DOM ELEMENTS
 const form = document.getElementById("chatForm");
