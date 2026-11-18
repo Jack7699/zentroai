@@ -73,6 +73,131 @@ authToggle.addEventListener("click", () => {
   authError.textContent = "";
 });
 
+
+// EMAIL OTP VERIFICATION
+let pendingVerificationEmail = "";
+
+let otpScreen = null;
+
+function showOtpScreen() {
+  authForm.style.display = "none";
+  authToggle.style.display = "none";
+
+  if (!otpScreen) {
+    otpScreen = document.createElement("div");
+    otpScreen.id = "otpScreen";
+
+    otpScreen.innerHTML = `
+      <h2 style="color:white;margin-bottom:10px;">Verify your email</h2>
+      <p style="color:#aaa;margin-bottom:20px;">
+        Enter the 6-digit code sent to your email.
+      </p>
+
+      <input
+        id="otpInput"
+        type="text"
+        inputmode="numeric"
+        maxlength="6"
+        placeholder="000000"
+        style="width:100%;padding:15px;margin-bottom:15px;
+        border-radius:10px;border:1px solid #554477;
+        background:#171326;color:white;font-size:22px;
+        text-align:center;letter-spacing:8px;"
+      >
+
+      <button id="verifyOtpButton" type="button"
+        style="width:100%;padding:14px;border:0;
+        border-radius:10px;background:#9b6bff;
+        color:white;cursor:pointer;">
+        Verify code
+      </button>
+
+      <button id="resendOtpButton" type="button"
+        style="width:100%;padding:12px;margin-top:10px;
+        background:transparent;border:0;color:#b99aff;
+        cursor:pointer;">
+        Resend code
+      </button>
+
+      <button id="backOtpButton" type="button"
+        style="width:100%;padding:10px;background:transparent;
+        border:0;color:#aaa;cursor:pointer;">
+        Back to sign up
+      </button>
+    `;
+
+    authForm.parentElement.appendChild(otpScreen);
+
+    document.getElementById("verifyOtpButton").addEventListener("click", verifyEmailOtp);
+    document.getElementById("resendOtpButton").addEventListener("click", resendEmailOtp);
+
+    document.getElementById("backOtpButton").addEventListener("click", () => {
+      otpScreen.style.display = "none";
+      authForm.style.display = "flex";
+      authToggle.style.display = "";
+      authError.textContent = "";
+    });
+  }
+
+  otpScreen.style.display = "block";
+}
+
+async function verifyEmailOtp() {
+  const token = document.getElementById("otpInput").value.trim();
+  const verifyButton = document.getElementById("verifyOtpButton");
+
+  if (!/^\d{6}$/.test(token)) {
+    authError.textContent = "Enter a valid 6-digit code.";
+    return;
+  }
+
+  verifyButton.disabled = true;
+  authError.textContent = "";
+
+  try {
+    const { data, error } = await supabaseClient.auth.verifyOtp({
+      email: pendingVerificationEmail,
+      token,
+      type: "signup"
+    });
+
+    if (error) throw error;
+
+    if (data.session) {
+      updateAuthUI(data.session);
+    }
+  } catch (error) {
+    authError.textContent = error.message;
+  } finally {
+    verifyButton.disabled = false;
+  }
+}
+
+async function resendEmailOtp() {
+  const resendButton = document.getElementById("resendOtpButton");
+
+  resendButton.disabled = true;
+  resendButton.textContent = "Sending...";
+
+  try {
+    const { error } = await supabaseClient.auth.resend({
+      type: "signup",
+      email: pendingVerificationEmail
+    });
+
+    if (error) throw error;
+
+    authError.style.color = "#70e2b5";
+    authError.textContent = "A new verification code has been sent!";
+  } catch (error) {
+    authError.style.color = "#ff7181";
+    authError.textContent = error.message;
+  } finally {
+    resendButton.disabled = false;
+    resendButton.textContent = "Resend code";
+  }
+}
+
 // AUTH FORM
 authForm.addEventListener("submit", async event => {
   event.preventDefault();
@@ -86,44 +211,44 @@ authForm.addEventListener("submit", async event => {
 
   try {
     if (isSignUp) {
-const { data, error } = await supabaseClient.auth.signUp({
-  email,
-  password,
-  options: {
-    emailRedirectTo: "https://jack7699.github.io/zentroai/"
-  }
-});
+      const { data, error } = await supabaseClient.auth.signUp({
+        email,
+        password
+      });
 
       if (error) throw error;
 
       if (!data.session) {
-        authError.style.color = "#70e2b5";
-        authError.textContent =
-          "Account created! Check your email to confirm your account.";
-      } else {
+        pendingVerificationEmail = email;
         authError.textContent = "";
+        showOtpScreen();
+      } else {
+        updateAuthUI(data.session);
       }
 
     } else {
-      const { error } =
+      const { data, error } =
         await supabaseClient.auth.signInWithPassword({
           email,
           password
         });
 
       if (error) throw error;
+
+      updateAuthUI(data.session);
     }
 
   } catch (error) {
     authError.style.color = "#ff7181";
     authError.textContent = error.message;
+  } finally {
+    authSubmit.disabled = false;
+    authSubmit.textContent = isSignUp
+      ? "Create account"
+      : "Sign in";
   }
-
-  authSubmit.disabled = false;
-  authSubmit.textContent = isSignUp
-    ? "Create account"
-    : "Sign in";
 });
+
 
 // UPDATE AUTH SCREEN
 function updateAuthUI(session) {
