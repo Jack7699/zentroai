@@ -962,3 +962,105 @@ button {
     transition-duration: 0.01ms !important;
   }
 }
+
+
+/* =================================
+   ZENTRO — CHAT HISTORY FIX
+================================= */
+
+.history-item {
+  width: 100%;
+  min-height: 42px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 10px 0 13px;
+  margin-bottom: 5px;
+
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 10px;
+
+  color: #aaa5ba;
+  cursor: pointer;
+  transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+.history-item:hover {
+  background: rgba(255, 255, 255, 0.055);
+  border-color: rgba(255, 255, 255, 0.06);
+  color: #f4f2fa;
+}
+
+.history-item.active {
+  background: rgba(149, 101, 255, 0.13);
+  border-color: rgba(149, 101, 255, 0.20);
+  color: #ffffff;
+}
+
+.history-title {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font-size: 12px;
+  text-align: left;
+}
+
+/* Delete button — hidden until hover */
+
+.delete-chat {
+  width: 25px;
+  height: 25px;
+  flex-shrink: 0;
+
+  display: grid;
+  place-items: center;
+
+  border: 0;
+  border-radius: 7px;
+  background: transparent;
+  color: #888398;
+
+  font-size: 18px;
+  line-height: 1;
+  opacity: 0;
+  transition: all 0.2s ease;
+}
+
+.history-item:hover .delete-chat,
+.history-item.active .delete-chat {
+  opacity: 1;
+}
+
+.delete-chat:hover {
+  background: rgba(255, 85, 100, 0.13);
+  color: #ff6878;
+}
+
+/* =================================
+   PREMIUM SIDEBAR DETAILS
+================================= */
+
+.sidebar {
+  background: rgba(12, 12, 21, 0.97);
+  backdrop-filter: blur(25px);
+}
+
+.history-heading {
+  padding-left: 5px;
+  margin-top: 27px;
+  margin-bottom: 12px;
+  color: #777287;
+  font-size: 10px;
+  letter-spacing: 1.6px;
+}
+
+.chat-history {
+  padding-right: 3px;
+}
+
+.sidebar-bottom {
+  border-top: 1px solid rgba(255,255,255,0.07);
+}
