@@ -97,6 +97,7 @@ authForm.addEventListener("submit", async event => {
   authSubmit.disabled = true;
   authSubmit.textContent = "Please wait...";
   authError.textContent = "";
+  authError.style.color = "#ff7181";
 
   try {
     if (isSignUp) {
@@ -107,16 +108,25 @@ authForm.addEventListener("submit", async event => {
 
       if (error) throw error;
 
-      authError.style.color = "#70e2b5";
-      authError.textContent = "Account created successfully! You can now sign in.";
+      if (data.session) {
+        authError.style.color = "#70e2b5";
+        authError.textContent = "Account created successfully!";
+        updateAuthUI(data.session);
+      } else {
+        authError.style.color = "#70e2b5";
+        authError.textContent =
+          "Account created! You can now sign in.";
 
-      isSignUp = false;
-      authTitle.textContent = "Welcome to ZentroAI";
-      authSubtitle.textContent = "Sign in to continue";
-      authSubmit.textContent = "Sign in";
-      authToggle.textContent = "Don't have an account? Sign up";
+        isSignUp = false;
+        authTitle.textContent = "Welcome to ZentroAI";
+        authSubtitle.textContent = "Sign in to continue";
+        authSubmit.textContent = "Sign in";
+        authToggle.textContent =
+          "Don't have an account? Sign up";
 
-      authPassword.value = "";
+        authPassword.value = "";
+      }
+
     } else {
       const { data, error } =
         await supabaseClient.auth.signInWithPassword({
@@ -125,29 +135,28 @@ authForm.addEventListener("submit", async event => {
         });
 
       if (error) {
-        authError.style.color = "#ff7181";
-        authError.textContent = "Login failed: " + error.message;
-        return;
+        throw new Error("Login failed: " + error.message);
       }
 
-      if (data.session) {
-        updateAuthUI(data.session);
-        authScreen.hidden = true;
-        app.hidden = false;
-        render();
+      if (!data.session) {
+        throw new Error("Login failed: No session received.");
       }
+
+      updateAuthUI(data.session);
     }
+
   } catch (error) {
     authError.style.color = "#ff7181";
     authError.textContent = isSignUp
       ? "Account creation failed: " + error.message
-      : "Login failed: " + error.message;
+      : error.message;
   } finally {
     authSubmit.disabled = false;
-    authSubmit.textContent = isSignUp ? "Create account" : "Sign in";
+    authSubmit.textContent = isSignUp
+      ? "Create account"
+      : "Sign in";
   }
 });
-
 // LOGOUT BUTTON
 const profile = document.querySelector(".profile");
 
