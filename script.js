@@ -94,15 +94,16 @@ authForm.addEventListener("submit", async event => {
 
       if (error) throw error;
 
-      if (data.session) {
-        updateAuthUI(data.session);
-      } else {
-        authError.textContent = "Account created! Please sign in.";
-        isSignUp = false;
-        authTitle.textContent = "Welcome to ZentroAI";
-        authSubmit.textContent = "Sign in";
-        authToggle.textContent = "Don't have an account? Sign up";
-      }
+      authError.style.color = "#70e2b5";
+      authError.textContent = "Account created successfully! You can now sign in.";
+
+      isSignUp = false;
+      authTitle.textContent = "Welcome to ZentroAI";
+      authSubtitle.textContent = "Sign in to continue";
+      authSubmit.textContent = "Sign in";
+      authToggle.textContent = "Don't have an account? Sign up";
+
+      authPassword.value = "";
     } else {
       const { data, error } =
         await supabaseClient.auth.signInWithPassword({
@@ -110,46 +111,29 @@ authForm.addEventListener("submit", async event => {
           password
         });
 
-      if (error) throw error;
+      if (error) {
+        authError.style.color = "#ff7181";
+        authError.textContent = "Login failed: " + error.message;
+        return;
+      }
 
-      updateAuthUI(data.session);
+      if (data.session) {
+        updateAuthUI(data.session);
+        authScreen.hidden = true;
+        app.hidden = false;
+        render();
+      }
     }
   } catch (error) {
-    authError.textContent = error.message;
+    authError.style.color = "#ff7181";
+    authError.textContent = isSignUp
+      ? "Account creation failed: " + error.message
+      : "Login failed: " + error.message;
   } finally {
     authSubmit.disabled = false;
     authSubmit.textContent = isSignUp ? "Create account" : "Sign in";
   }
 });
-
-// UPDATE AUTH SCREEN
-function updateAuthUI(session) {
-  currentSession = session;
-
-  if (session) {
-    authScreen.hidden = true;
-    app.hidden = false;
-
-    const profileName = document.querySelector(".profile-info strong");
-    const profileDescription =
-      document.querySelector(".profile-info span");
-
-    if (profileName) {
-      profileName.textContent =
-        session.user.email.split("@")[0];
-    }
-
-    if (profileDescription) {
-      profileDescription.textContent = session.user.email;
-    }
-
-    render();
-
-  } else {
-    app.hidden = true;
-    authScreen.hidden = false;
-  }
-}
 
 // LOGOUT BUTTON
 const profile = document.querySelector(".profile");
