@@ -870,8 +870,46 @@ textarea:focus-visible {
   }
 }
 ```
-body,
-#app,
+
+  .welcome h1 {
+    font-size: 43px;
+  }
+
+  .welcome-description {
+    font-size: 13px;
+  }
+
+  .suggestions,
+  .compare {
+    grid-template-columns: 1fr;
+  }
+
+  .suggestion {
+    padding: 14px;
+  }
+
+  .composer-area {
+    padding: 10px 12px 15px;
+  }
+
+  .clear-button {
+    font-size: 11px;
+    padding: 8px;
+  }
+
+  .auth-card {
+    padding: 28px 20px;
+  }
+}
+```
+body {
+    background: #171027 !important;
+}
+
+#app {
+    background: #171027 !important;
+}
+
 .main-content,
 .chat-area,
 #chatArea,
@@ -879,5 +917,9 @@ body,
 #exploreView,
 #libraryView,
 #premiumView {
-    background-color: #171027 !important;
+    background: #171027 !important;
+}
+
+.sidebar {
+    background: #211638 !important;
 }
