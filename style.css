@@ -870,3 +870,14 @@ textarea:focus-visible {
   }
 }
 ```
+body,
+#app,
+.main-content,
+.chat-area,
+#chatArea,
+#messages,
+#exploreView,
+#libraryView,
+#premiumView {
+    background-color: #171027 !important;
+}
