@@ -870,3 +870,22 @@ textarea:focus-visible {
   }
 }
 ```
+html,
+body,
+#app {
+    background: #10110f !important;
+    color: #f5f5f5;
+}
+
+.auth-screen {
+    background: #10110f !important;
+}
+
+.sidebar {
+    background: #151613 !important;
+}
+
+.main-content,
+.chat-area {
+    background: #10110f !important;
+}
