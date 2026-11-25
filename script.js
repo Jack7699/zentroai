@@ -626,36 +626,169 @@ if (chats.length > 0) {
   activeChatId = chats[0].id;
 }
 
+```js
 // ==========================================
-// PREMIUM PAGE
+// ZENTROAI 2.0 — PAGE NAVIGATION
 // ==========================================
 
 const chatArea = document.getElementById("chatArea");
 const composerArea = document.getElementById("composerArea");
+
 const premiumView = document.getElementById("premiumView");
 const premiumNotice = document.getElementById("premiumNotice");
 
-// Show the Premium page or go back to the chat
-function showPremium(show) {
-  premiumView.hidden = !show;
-  chatArea.hidden = show;
-  composerArea.hidden = show;
+const exploreView = document.getElementById("exploreView");
+const libraryView = document.getElementById("libraryView");
+
+const navigationButtons = document.querySelectorAll(".nav-item");
+
+function showPage(page) {
+  // Hide every page first
+  chatArea.hidden = true;
+  composerArea.hidden = true;
+  premiumView.hidden = true;
+  exploreView.hidden = true;
+  libraryView.hidden = true;
+
+  // Display selected page
+  if (page === "chat") {
+    chatArea.hidden = false;
+    composerArea.hidden = false;
+  }
+
+  if (page === "explore") {
+    exploreView.hidden = false;
+  }
+
+  if (page === "library") {
+    libraryView.hidden = false;
+  }
+
+  if (page === "premium") {
+    premiumView.hidden = false;
+  }
+
+  // Update active navigation item
+  navigationButtons.forEach(button => {
+    button.classList.toggle(
+      "active",
+      button.dataset.page === page
+    );
+  });
+
   closeSidebar();
 }
 
+// Sidebar navigation
+navigationButtons.forEach(button => {
+  button.addEventListener("click", () => {
+    showPage(button.dataset.page);
+  });
+});
+
+// New conversation returns to assistant
+document.getElementById("newChat").addEventListener("click", () => {
+  showPage("chat");
+});
+
+// Opening a conversation returns to assistant
+chatHistory.addEventListener("click", () => {
+  showPage("chat");
+});
+
+// Premium page
 document.getElementById("premiumButton").addEventListener("click", () => {
-  showPremium(true);
+  showPage("premium");
 });
 
+// Premium back button
 document.getElementById("backToChat").addEventListener("click", () => {
-  showPremium(false);
+  showPage("chat");
 });
 
-// No payment yet: be clear that nothing changed
+// Explore and Library back buttons
+document.querySelectorAll(".page-back").forEach(button => {
+  button.addEventListener("click", () => {
+    showPage("chat");
+  });
+});
+
+// Premium checkout placeholder
 document.getElementById("upgradeButton").addEventListener("click", () => {
-  premiumNotice.textContent = "Premium checkout isn't available yet. Your plan has not changed.";
+  premiumNotice.textContent =
+    "Premium checkout isn't available yet. Your plan has not changed.";
 });
 
+// Start on the assistant page
+showPage("chat");
+
+// ==========================================
+// AUTO CHAT TITLES
+// ==========================================
+
+async function generateTitle(chat) {
+  if (!chat || chat.titleGenerated || chat.messages.length < 2) return;
+
+  chat.titleGenerated = true;
+
+  const userText =
+    chat.messages.find(m => m.role === "user")?.text || "";
+
+  const replyText =
+    chat.messages.find(m =>
+      m.role === "assistant" && m.text && !m.image
+    )?.text || "";
+
+  const prompt =
+    "Write a short title of 3 to 6 words for this conversation. " +
+    "Reply with only the title. No quotes, no emojis, no full stop.\n\n" +
+    "User: " + userText.slice(0, 500) +
+    "\n\nAssistant: " + replyText.slice(0, 500);
+
+  try {
+    const response = await fetch(API_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        messages: [
+          { role: "user", text: prompt }
+        ]
+      })
+    });
+
+    const data = await response.json();
+
+    if (response.ok && data.reply) {
+      const title = data.reply
+        .replace(/["'`*#]/g, "")
+        .replace(/\s+/g, " ")
+        .trim()
+        .slice(0, 40);
+
+      if (title) {
+        chat.title = title;
+      }
+    }
+
+  } catch (error) {
+    console.warn("Could not generate title:", error);
+  }
+
+  saveChats();
+  renderHistory();
+}
+
+// Generate titles for older conversations
+async function generateMissingTitles() {
+  for (const chat of chats) {
+    await generateTitle(chat);
+  }
+}
+
+generateMissingTitles();
+```
 // ==========================================
 // AUTO CHAT TITLES
 // ==========================================
